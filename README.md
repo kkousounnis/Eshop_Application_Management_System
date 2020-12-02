@@ -1,2 +1,2 @@
-# Eshop_Application_Management_System
-Eshop Java Mysql Application
+# Eshop_Java_Application_Data_Management_System
+
