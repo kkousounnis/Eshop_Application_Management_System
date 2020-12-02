@@ -11,7 +11,7 @@ public class Customer implements ICustomerCmdUtils {
     }
     
     @Override
-    public models.Customer askDate() {
+    public models.Customer askData() {
 
         Command cmd = new Command();
         models.Customer customer = new models.Customer();

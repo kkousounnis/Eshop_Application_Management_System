@@ -7,5 +7,5 @@ public interface ICustomerCmdUtils {
     /**
      * ask from the cmd the customer's data and return new customer
      */
-    public Customer askDate();
+    public Customer askData();
 }

@@ -8,6 +8,7 @@ package eshop;
 import dbutils.DataBase;
 import java.util.Scanner;
 import models.Customer;
+import models.Product;
 
 /**
  *
@@ -17,12 +18,19 @@ public class Eshop {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-
-        Customer customer = new Customer();
-        cmdutils.Customer cmdCustomer = new cmdutils.Customer(sc);
-        customer = cmdCustomer.askDate();
-
         DataBase db = new DataBase();
-        db.insertCustomer(customer, "customers");
+        Customer customer = new Customer();
+        Product product = new Product();
+
+        cmdutils.Customer cmdCustomer = new cmdutils.Customer(sc);
+        cmdutils.Product cmdProduct = new cmdutils.Product(sc);
+
+        product = cmdProduct.askData();
+
+        System.out.println("Insert" + db.insertCustomer(customer, "customers")
+                + "record");
+        System.out.println("Insert" + db.insertProducts(product, "products")
+                + "record");
+
     }
 }

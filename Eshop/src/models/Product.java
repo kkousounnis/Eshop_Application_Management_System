@@ -12,6 +12,10 @@ public class Product {
         this.quantity = quantity;
     }
 
+    public Product() {
+         
+    }
+
     public String getName() {
         return name;
     }

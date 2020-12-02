@@ -5,10 +5,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jdk.nashorn.internal.ir.Statement;
 import models.Customer;
+import models.Product;
 
 public class DataBase {
 
@@ -18,7 +19,7 @@ public class DataBase {
     public String database;
 
     Connection con;
-    Statement statement;
+    Statement statement = null;
     PreparedStatement preparedstatement;
     ResultSet rs;
 
@@ -56,8 +57,47 @@ public class DataBase {
         sb.append(" \"");sb.append(c.getEmaill()); sb.append("\"");
         sb.append(" );");
         
-        //System.out.println(sb.toString());
+        try {
+            //System.out.println(sb.toString());
+
+            statement = con.createStatement();
+            result = statement.executeUpdate(sb.toString());
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         
         
+        
+     
+        return result;
+    }
+    
+     public int insertProducts(Product p, String tableName){
+        //INSERT INTO `customers`(`name`,`price`,`quantity`) VALUES ('Fix it kit','187','1');
+        int result = 0;
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("INSERT INTO ");
+        sb.append(tableName);
+        sb.append("(`name`,`price`,`quantity`)");
+        sb.append(" VALUES (");
+        sb.append(" \""); sb.append(p.getName()); sb.append("\"");sb.append(",");
+        sb.append(" \"");sb.append(p.getPrice()); sb.append("\"");sb.append(",");
+        sb.append(" \"");sb.append(p.getQuantity()); sb.append("\"");
+        sb.append(" );");
+        
+        try {
+            //System.out.println(sb.toString());
+
+            statement = con.createStatement();
+            result = statement.executeUpdate(sb.toString());
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         
+        
+        
+     
         return result;
     }
 }
