@@ -5,6 +5,7 @@
  */
 package eshop;
 
+import dbutils.DataBase;
 import java.util.Scanner;
 import models.Customer;
 
@@ -20,5 +21,8 @@ public class Eshop {
         Customer customer = new Customer();
         cmdutils.Customer cmdCustomer = new cmdutils.Customer(sc);
         customer = cmdCustomer.askDate();
+
+        DataBase db = new DataBase();
+        db.insertCustomer(customer, "customers");
     }
 }
