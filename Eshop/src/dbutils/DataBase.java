@@ -1,11 +1,13 @@
 package dbutils;
 
+import cmdutils.Command;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import models.Customer;
@@ -72,7 +74,7 @@ public class DataBase {
         return result;
     }
     
-     public int insertProducts(Product p, String tableName){
+    public int insertProducts(Product p, String tableName){
         //INSERT INTO `customers`(`name`,`price`,`quantity`) VALUES ('Fix it kit','187','1');
         int result = 0;
         StringBuilder sb = new StringBuilder();
@@ -100,4 +102,45 @@ public class DataBase {
      
         return result;
     }
+     
+    public int insertOrder(Scanner sc){
+        
+        int result = 0;
+        /*
+            Step 1 - Select Customer
+            Step 2 - Select Product
+            Step 3 - sum products
+            Step 4 - Insert order
+            Step 5 - Insert Products
+            
+        */
+        System.out.println("Customer Id:"+selectCustomer(sc));
+        
+        return (result);
+    }
+    public int selectCustomer(Scanner sc){
+        Command cmd = new Command();
+        Customer customer = null;
+        int customerId = -1;
+        try{
+            statement = con.createStatement();
+
+            rs = statement.executeQuery("SELECT * FROM `customers`");
+            while (rs.next()) {
+                customerId=rs.getInt("id");
+                customer= new Customer(rs.getString("first_name")
+                            ,rs.getString("last_name")
+                            ,rs.getString("tel")
+                            ,rs.getString("email"));
+                System.out.println(customerId+"."+customer);
+             }
+            customerId = cmd.getIntField(sc,"Please select the customer");
+             
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+        return customerId;
+    }
+    
+    
 }

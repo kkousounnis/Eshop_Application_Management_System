@@ -19,18 +19,18 @@ public class Eshop {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         DataBase db = new DataBase();
-        Customer customer = new Customer();
-        Product product = new Product();
-
-        cmdutils.Customer cmdCustomer = new cmdutils.Customer(sc);
-        cmdutils.Product cmdProduct = new cmdutils.Product(sc);
-
-        product = cmdProduct.askData();
-
-        System.out.println("Insert" + db.insertCustomer(customer, "customers")
-                + "record");
-        System.out.println("Insert" + db.insertProducts(product, "products")
-                + "record");
-
+//        Customer customer = new Customer();
+//        Product product = new Product();
+//
+//        cmdutils.Customer cmdCustomer = new cmdutils.Customer(sc);
+//        cmdutils.Product cmdProduct = new cmdutils.Product(sc);
+//
+//        product = cmdProduct.askData();
+//
+//        System.out.println("Insert" + db.insertCustomer(customer, "customers")
+//                + "record");
+//        System.out.println("Insert" + db.insertProducts(product, "products")
+//                + "record");
+        db.insertOrder(sc);
     }
 }
