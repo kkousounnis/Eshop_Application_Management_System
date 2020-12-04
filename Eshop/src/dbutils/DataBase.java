@@ -26,7 +26,7 @@ public class DataBase {
 
     Connection con;
     Statement statement = null;
-    PreparedStatement preparedstatement;
+    PreparedStatement preparedStatement = null;
     ResultSet rs;
 
     public DataBase() {
@@ -42,71 +42,69 @@ public class DataBase {
             Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     //Insert update delete <----- int result
     //SELECT               <----- Result set
-    
-    
     //insert into customers
-    public int insertCustomer(Customer c, String tableName){
+    public int insertCustomer(Customer c, String tableName) {
         //INSERT INTO `customers`(`first_name`,`last_name`,`tel`,`email`) VALUES ('John','Johnakos','210212121','j@gmail.com');
+
         int result = 0;
-        StringBuilder sb = new StringBuilder();
-        
-        sb.append("INSERT INTO ");
-        sb.append(tableName);
-        sb.append("(`first_name`,`last_name`,`tel`,`email`)");
-        sb.append(" VALUES (");
-        sb.append(" \""); sb.append(c.getFirstName()); sb.append("\"");sb.append(",");
-        sb.append(" \"");sb.append(c.getLastName()); sb.append("\"");sb.append(",");
-        sb.append(" \"");sb.append(c.getTel()); sb.append("\"");sb.append(",");
-        sb.append(" \"");sb.append(c.getEmaill()); sb.append("\"");
-        sb.append(" );");
-        
+
         try {
-            //System.out.println(sb.toString());
 
             statement = con.createStatement();
-            result = statement.executeUpdate(sb.toString());
+
+            preparedStatement = con.prepareStatement(
+                    "INSERT INTO " + tableName + ""
+                    + "(`first_name`,"
+                    + "`last_name`,"
+                    + " `tel`,"
+                    + " `email`)"
+                    + " VALUES (?,?,?,?)");
+
+            preparedStatement.setString(1, c.getFirstName());
+            preparedStatement.setString(2, c.getLastName());
+            preparedStatement.setString(3, c.getTel());
+            preparedStatement.setString(4, c.getEmaill());
+
+            result = preparedStatement.executeUpdate();
+
         } catch (SQLException ex) {
             Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
         }
-         
-        
-        
-     
+
         return result;
     }
-    
-    public int insertProducts(Product p, String tableName){
+
+    public int insertProducts(Product p, String tableName) {
         //INSERT INTO `customers`(`name`,`price`,`quantity`) VALUES ('Fix it kit','187','1');
         int result = 0;
-        StringBuilder sb = new StringBuilder();
-        
-        sb.append("INSERT INTO ");
-        sb.append(tableName);
-        sb.append("(`name`,`price`,`quantity`)");
-        sb.append(" VALUES (");
-        sb.append(" \""); sb.append(p.getName()); sb.append("\"");sb.append(",");
-        sb.append(" \"");sb.append(p.getPrice()); sb.append("\"");sb.append(",");
-        sb.append(" \"");sb.append(p.getQuantity()); sb.append("\"");
-        sb.append(" );");
-        
+
         try {
             //System.out.println(sb.toString());
 
             statement = con.createStatement();
-            result = statement.executeUpdate(sb.toString());
+
+            preparedStatement = con.prepareStatement(
+                    "INSERT INTO " + tableName + ""
+                    + "(`name`,"
+                    + "`price`,"
+                    + " `quantity`)"
+                    + " VALUES (?,?,?)");
+
+            preparedStatement.setString(1, p.getName());
+            preparedStatement.setDouble(2, p.getPrice());
+            preparedStatement.setInt(3, p.getQuantity());
+
+            result = preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
         }
-         
-        
-        
-     
+
         return result;
     }
-     
+
     public int insertOrder(Scanner sc) {
 
         int result = 0;
@@ -119,9 +117,9 @@ public class DataBase {
             
          */
         int customerId = selectCustomer(sc);
-        
+
         List<ProductDTO> productsIdsQuantities = selectProducts(sc);
-        
+
         System.out.println(productsIdsQuantities);
 
         double sumPricesOfSelectedProducts = sumProductsPrices(productsIdsQuantities);
@@ -129,11 +127,9 @@ public class DataBase {
         // INSERT INTO orders2(`customers_id`, `total_price`, `date`) 
         // VALUES(1, 187.65, "2020-12-03"), (1, 4128.3, "2020-12-03")
         int orders2Id = addOrder(customerId, sumPricesOfSelectedProducts, "orders2");
-        
+
         result = insertOrders2Details(orders2Id, productsIdsQuantities);
- 
-        
-        
+
         return (result);
     }
 
@@ -148,9 +144,9 @@ public class DataBase {
             while (rs.next()) {
                 customerId = rs.getInt("id");
                 customer = new Customer(rs.getString("first_name"),
-                         rs.getString("last_name"),
-                         rs.getString("tel"),
-                         rs.getString("email"));
+                        rs.getString("last_name"),
+                        rs.getString("tel"),
+                        rs.getString("email"));
                 System.out.println(customerId + "." + customer);
             }
             customerId = cmd.getIntField(sc, "Please select the customer");
@@ -167,10 +163,9 @@ public class DataBase {
         Command cmd = new Command();
         Product product = null;
         int productId = -1;
-         
+
         try {
             statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            
 
             rs = statement.executeQuery("SELECT * FROM `products`");
             while (rs.next()) {
@@ -186,17 +181,16 @@ public class DataBase {
             while (choice == 1) {
                 // product id
                 int prId = cmd.getIntField(sc, "Please select a product to add");
-                
-                
+
                 // ask for quantity for the previous product
                 int quant = cmd.getIntField(sc, "Please type the quantity of the product with id: " + prId);
                 rs.absolute(prId);
                 double price = rs.getDouble("price");
                 productIdsQuantities.add(new ProductDTO(prId, quant, price));
-                
+
                 // ask if he would like to add one more product
                 choice = cmd.getIntField(sc, "Would you like to add 1 more product, "
-                                           + "if yes press 1 else press any other number");
+                        + "if yes press 1 else press any other number");
 
             }
             //productId = cmd.getIntField(sc,"Please select the product id");
@@ -214,21 +208,32 @@ public class DataBase {
         }
         return (result);
     }
+
     public int addOrder(int customerId, double totalPrice, String tableName) {
         // INSERT INTO orders2(`customers_id`, `total_price`, `date`) 
         // VALUES(1, 187.65, "2020-12-03"), (1, 4128.3, "2020-12-03")
-        
+
         int orders2Id = 0;
         int result = 0;
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append("INSERT INTO ");
-        sb.append("`"); sb.append(tableName); sb.append("`");
+        sb.append("`");
+        sb.append(tableName);
+        sb.append("`");
         sb.append("(`customers_id`, `total_price`, `date`)");
         sb.append(" VALUES(");
-        sb.append("\""); sb.append(customerId); sb.append("\""); sb.append(",");
-        sb.append("\""); sb.append(totalPrice); sb.append("\""); sb.append(",");
-        sb.append("\""); sb.append(LocalDateTime.now()); sb.append("\"");
+        sb.append("\"");
+        sb.append(customerId);
+        sb.append("\"");
+        sb.append(",");
+        sb.append("\"");
+        sb.append(totalPrice);
+        sb.append("\"");
+        sb.append(",");
+        sb.append("\"");
+        sb.append(LocalDateTime.now());
+        sb.append("\"");
         sb.append(")");
         try {
             //        System.out.println(sb.toString());
@@ -236,45 +241,43 @@ public class DataBase {
             result = statement.executeUpdate(sb.toString(), Statement.RETURN_GENERATED_KEYS);
             ResultSet rs = statement.getGeneratedKeys();
             while (rs.next()) {
-                System.out.println(rs.getString(1));
-                orders2Id=rs.getInt(1);
+
+                orders2Id = rs.getInt(1);
             }
-  
-            
+
         } catch (SQLException ex) {
             //Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return(orders2Id);
+        return (orders2Id);
     }
-    
-    
-     public int insertOrders2Details(int orders2Id, List<ProductDTO> productsIdsQuantities) {
-         PreparedStatement preparedStatement = null;
-         ResultSet rs = null;
-         int result = 0;
-         for (int i = 0; i < productsIdsQuantities.size(); i++) {
-             try {
 
-                 preparedStatement = con.prepareStatement(
-                         "INSERT INTO `orders2_details`"
-                         + "(`orders2_id`,"
-                         + "`products_id`,"
-                         + " `price`,"
-                         + " `quantity`)"
-                         + " VALUES (?,?,?,?)");
+    public int insertOrders2Details(int orders2Id, List<ProductDTO> productsIdsQuantities) {
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+        int result = 0;
+        for (int i = 0; i < productsIdsQuantities.size(); i++) {
+            try {
 
-                 preparedStatement.setInt(1, orders2Id);
-                 preparedStatement.setInt(2, productsIdsQuantities.get(i).getProductId());
-                 preparedStatement.setDouble(3, productsIdsQuantities.get(i).getPrice());
-                 preparedStatement.setInt(4, productsIdsQuantities.get(i).getQuantity());
+                preparedStatement = con.prepareStatement(
+                        "INSERT INTO `orders2_details`"
+                        + "(`orders2_id`,"
+                        + "`products_id`,"
+                        + " `price`,"
+                        + " `quantity`)"
+                        + " VALUES (?,?,?,?)");
 
-                 result = preparedStatement.executeUpdate();
+                preparedStatement.setInt(1, orders2Id);
+                preparedStatement.setInt(2, productsIdsQuantities.get(i).getProductId());
+                preparedStatement.setDouble(3, productsIdsQuantities.get(i).getPrice());
+                preparedStatement.setInt(4, productsIdsQuantities.get(i).getQuantity());
 
-             } catch (SQLException e) {
-                 e.printStackTrace();
-             }
-         }
-         return (result);
+                result = preparedStatement.executeUpdate();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return (result);
     }
 
 }
