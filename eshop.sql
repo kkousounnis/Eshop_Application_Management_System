@@ -30,4 +30,22 @@ CONSTRAINT `fk_orders_customers_id__customers_id` FOREIGN KEY(`customers_id`) RE
 );
 INSERT INTO `eshop1`.`orders` (`date`, `products_id`, `customers_id`, `quantity`, `total_price`) VALUES ('2020-2-1', '1', '1', '1', '100');
 
+CREATE TABLE `orders2` (
+`id` int NOT NULL AUTO_INCREMENT,
+`date` datetime NOT NULL,
+`customers_id` int NOT NULL,
+`total_price` decimal(10,3) DEFAULT NULL,
+PRIMARY KEY (`id`),
+KEY `fk_orders2_customers_id__customers_id_idx` (`customers_id`),
+CONSTRAINT `fk_orders2_customers_id__customers_id` FOREIGN KEY (`customers_id`) REFERENCES `customers` (`id`)
+);
 
+CREATE TABLE `eshop1`.`orders2_details` (
+`id` INT NOT NULL AUTO_INCREMENT,
+`orders2_id` INT NOT NULL,
+`products_id` INT NOT NULL,
+`price` DECIMAL(10,3) NOT NULL,
+`quantity` INT NOT NULL,
+PRIMARY KEY (`id`), 
+CONSTRAINT `fk_orders2_details_orders2_id__orders2_id` FOREIGN KEY (`orders2_id`) REFERENCES `eshop1`.`orders2` (`id`),
+CONSTRAINT `fk_orders2_details_products_id__products_id` FOREIGN KEY (`products_id`) REFERENCES `eshop1`.`products` (`id`));
