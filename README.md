@@ -1,2 +1,2 @@
-# Eshop_Java_Application_Data_Management_System
+# Shop_Java_Application_Data_Management_System
 
